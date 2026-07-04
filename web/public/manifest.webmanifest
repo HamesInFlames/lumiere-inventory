@@ -1,0 +1,17 @@
+{
+  "name": "Lumière Inventory",
+  "short_name": "Inventory",
+  "description": "Live bar inventory tracking for Lumière Pâtisserie",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf7ef",
+  "theme_color": "#8a6d1f",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

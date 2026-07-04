@@ -1,0 +1,15 @@
+# Railway build config (Nixpacks).
+# Installs all workspaces, builds the frontend, then starts the server which
+# serves both the API and the built frontend from a single service.
+
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+cmds = ["npm install"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "npm start"
