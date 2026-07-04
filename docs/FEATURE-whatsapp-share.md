@@ -17,31 +17,30 @@ WhatsApp directly, the native share sheet, or clipboard.
 WhatsApp renders `*bold*` and `_italic_`. Target output:
 
 ```
-*Lumière Pâtisserie — Restock List*
+*Inventory*
 _Fri, Jul 4 · 5:12 PM · by James_
 
 *DRINKS*
-• Milk: 0 carton left (low, min 2)
-• Oat milk: 1 carton left (low, min 2)
+• Milk: 0 carton left
+• Oat milk: 1 carton left
 
 *CONTAINERS*
-• Blue lids: 1 sleeve left (low, min 2)
-• Shopping bags: 0 pack left (low, min 1)
+• Blue lids: 1 sleeve left
+• Shopping bags: 0 pack left
 
 *SUPPLIES*
-• CO2: 0 tank left (low, min 1)
+• CO2: 0 tank left
 
 5 items need restocking.
 ```
 
 Formatting rules:
-- Header line bold with the shop name; second line italic with date/time and
+- Header line is exactly `*Inventory*`; second line italic with date/time and
   the staff name from the existing "Your name" field (omit "by X" if empty).
 - Group by **Category** (bold, in the existing CATEGORY_ORDER), items sorted
   by subcategory then name within each group. Skip empty groups.
-- Each line: `• {itemName}: {quantity} {unit} left` plus `(low, min {threshold})`
-  when the item is low. In "low only" mode every line has it, so drop the
-  redundant `low,` and render `(min 2)`.
+- Each line: `• {itemName}: {quantity} {unit} left` — nothing else. No
+  threshold/min annotations in either scope.
 - Footer: `{n} items need restocking.` — or, when nothing is low:
   `All items are stocked. ✅` (message still sendable as an all-good report).
 - Keep it plain text; no tables (WhatsApp has no alignment), no markdown links.
@@ -117,8 +116,8 @@ No changes to: server, sheet schema, auth, SSE, seed data.
 
 ## 6. Verification checklist (for the implementing session)
 
-1. Unit-test `formatShareMessage`: grouping, ordering, low/min annotations,
-   empty-low case, missing staff name.
+1. Unit-test `formatShareMessage`: grouping, ordering, empty-low case,
+   missing staff name.
 2. `npm run build` passes (tsc strict).
 3. Run locally: seed → mark 2–3 items low → open Share → verify preview text
    matches §2 exactly; toggle scopes; edit textarea; Copy works.
