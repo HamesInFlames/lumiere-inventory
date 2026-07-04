@@ -1,0 +1,71 @@
+id,category,subcategory,item_name,unit,quantity,low_threshold
+milk,DRINKS,Milk & Dairy,Milk,carton,0,2
+almond-milk,DRINKS,Milk & Dairy,Almond milk,carton,0,2
+oat-milk,DRINKS,Milk & Dairy,Oat milk,carton,0,2
+skim-milk,DRINKS,Milk & Dairy,Skim milk,carton,0,2
+lactose-free-milk,DRINKS,Milk & Dairy,Lactose free milk,carton,0,2
+cream,DRINKS,Milk & Dairy,Cream,carton,0,2
+large-coffee-bags,DRINKS,Coffee,Large coffee bags,bag,0,2
+small-coffee-bags,DRINKS,Coffee,Small coffee bags,bag,0,2
+decaf-coffee-bags,DRINKS,Coffee,Decaf coffee bags,bag,0,1
+chai,DRINKS,Teas,Chai,box,0,1
+earl-grey,DRINKS,Teas,Earl grey,box,0,1
+peppermint,DRINKS,Teas,Peppermint,box,0,1
+iced-princess,DRINKS,Teas,Iced princess,box,0,1
+chamomile,DRINKS,Teas,Chamomile,box,0,1
+coconut-green,DRINKS,Teas,Coconut green,box,0,1
+strawberry-kiwi,DRINKS,Teas,Strawberry kiwi,box,0,1
+raspberry-lime,DRINKS,Teas,Raspberry lime,box,0,1
+lemon-oolong,DRINKS,Teas,Lemon oolong,box,0,1
+ginger-green,DRINKS,Teas,Ginger green,box,0,1
+jasmine,DRINKS,Teas,Jasmine,box,0,1
+green-tea,DRINKS,Teas,Green tea,box,0,1
+vanilla-syrup,DRINKS,Syrups,Vanilla,bottle,0,1
+caramel-syrup,DRINKS,Syrups,Caramel,bottle,0,1
+hazelnut-syrup,DRINKS,Syrups,Hazelnut,bottle,0,1
+pumpkin-spice-syrup,DRINKS,Syrups,Pumpkin spice,bottle,0,1
+tiramisu-syrup,DRINKS,Syrups,Tiramisu,bottle,0,1
+cinnamon-syrup,DRINKS,Syrups,Cinnamon,bottle,0,1
+pistachio-syrup,DRINKS,Syrups,Pistachio,bottle,0,1
+coconut-syrup,DRINKS,Syrups,Coconut,bottle,0,1
+sf-caramel-syrup,DRINKS,Syrups,SF Caramel,bottle,0,1
+sf-hazelnut-syrup,DRINKS,Syrups,SF Hazelnut,bottle,0,1
+sf-sweetener,DRINKS,Syrups,SF Sweetener,bottle,0,1
+matcha-powder,INGREDIENTS,Powders & Spices,Matcha powder,bag,0,1
+cinnamon-powder,INGREDIENTS,Powders & Spices,Cinnamon powder,jar,0,1
+cinnamon-sticks,INGREDIENTS,Powders & Spices,Cinnamon sticks,bag,0,1
+all-spice,INGREDIENTS,Powders & Spices,All spice,jar,0,1
+orange,INGREDIENTS,Fruits,Orange,unit,0,3
+lemon,INGREDIENTS,Fruits,Lemon,unit,0,3
+apple,INGREDIENTS,Fruits,Apple,unit,0,3
+ginger,INGREDIENTS,Fruits,Ginger,unit,0,2
+mint,INGREDIENTS,Fruits,Mint,pack,0,1
+brown-sugar,INGREDIENTS,Sweeteners,Brown sugar,bag,0,1
+white-sugar,INGREDIENTS,Sweeteners,White sugar,bag,0,1
+honey,INGREDIENTS,Sweeteners,Honey,bottle,0,1
+big-boxes,CONTAINERS,Boxes,Big boxes,case,0,1
+small-boxes,CONTAINERS,Boxes,Small boxes,case,0,1
+rectangle-boxes,CONTAINERS,Boxes,Rectangle boxes,case,0,1
+one-biter-containers-4,CONTAINERS,Boxes,4 one-biter containers,case,0,1
+one-biter-containers-12,CONTAINERS,Boxes,12 one-biter containers,case,0,1
+small-plastic-box-lids,CONTAINERS,Boxes,Small plastic box lids,pack,0,1
+large-plastic-box-lids,CONTAINERS,Boxes,Large plastic box lids,pack,0,1
+baguette-bags,CONTAINERS,Boxes,Baguette bags,pack,0,1
+paper-bags-10,CONTAINERS,Bags & Paper,Paper bags 10,pack,0,1
+paper-bags-12,CONTAINERS,Bags & Paper,Paper bags 12,pack,0,1
+lumiere-pastry-paper,CONTAINERS,Bags & Paper,Lumiere pastry paper,pack,0,1
+shopping-bags,CONTAINERS,Bags & Paper,Shopping bags,pack,0,1
+large-to-go-cups,CONTAINERS,Cups & Lids,Large to-go cups,sleeve,0,2
+regular-to-go-cups,CONTAINERS,Cups & Lids,Regular to-go cups,sleeve,0,2
+espresso-to-go-cups,CONTAINERS,Cups & Lids,Espresso to-go cups,sleeve,0,1
+cold-to-go-cups,CONTAINERS,Cups & Lids,Cold to-go cups,sleeve,0,2
+blue-lids,CONTAINERS,Cups & Lids,Blue lids,sleeve,0,2
+cold-to-go-lids,CONTAINERS,Cups & Lids,Cold to-go lids,sleeve,0,2
+napkins,SUPPLIES,General,Napkins,pack,0,2
+mixer-sticks,SUPPLIES,General,Mixer sticks,box,0,1
+plastic-gloves,SUPPLIES,General,Plastic gloves,box,0,1
+tape,SUPPLIES,General,Tape,roll,0,1
+straws,SUPPLIES,General,Straws,box,0,1
+co2,SUPPLIES,General,CO2,tank,0,1
+wooden-to-go-utensils,SUPPLIES,General,Wooden to-go utensils,box,0,1
+cup-holders,SUPPLIES,General,Cup holders,pack,0,1
