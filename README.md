@@ -31,18 +31,18 @@ npm run dev:web      # Vite on :5173 (proxies /api to :3000)
 
 1. Google Cloud Console → new project → enable **Google Sheets API**.
 2. Create a **service account**, download its JSON key.
-3. Create a spreadsheet, share it with the service account's `client_email` as **Editor**.
-4. Seed it:
-   ```bash
-   export GOOGLE_SERVICE_ACCOUNT_JSON="$(base64 -w0 service-account.json)"
-   export SHEET_ID="<id from the sheet URL>"
-   npm run seed
-   ```
-5. Set `GOOGLE_SERVICE_ACCOUNT_JSON` and `SHEET_ID` for the server (env or
-   `server/.env`). On next start the app runs in **sheets mode** — edits flow
-   both ways.
-6. For instant sheet→app updates, install the Apps Script webhook in
+3. Create a blank spreadsheet, share it with the service account's
+   `client_email` as **Editor**.
+4. Set `GOOGLE_SERVICE_ACCOUNT_JSON` (raw JSON or base64) and `SHEET_ID` for the
+   server. On first boot the server **auto-seeds the empty sheet** from the CSV
+   (Inventory + Units tabs, headers, unit dropdown) — no seed command needed.
+   Now the app runs in **sheets mode** and edits flow both ways.
+5. For instant sheet→app updates, install the Apps Script webhook in
    [`apps-script/Code.gs`](./apps-script/Code.gs) (instructions in the file).
+
+> The auto-seed only runs when the Inventory tab is empty, so restarts never
+> overwrite data. To force a full rebuild of the tabs from the CSV, run
+> `npm run seed` (this overwrites existing data).
 
 ## Deploy to Railway
 

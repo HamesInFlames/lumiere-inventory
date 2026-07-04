@@ -1,9 +1,9 @@
 import { google } from 'googleapis';
+import { readSeedItems } from '../csv.js';
+import { seedSheet } from '../sheetsSeed.js';
 
-// Column layout of the Inventory tab (see ARCHITECTURE.md §3).
 // A ID | B Category | C Subcategory | D Item Name | E Unit | F Quantity |
-// G Low Threshold | H Last Updated | I Updated By
-const HEADER = ['ID', 'Category', 'Subcategory', 'Item Name', 'Unit', 'Quantity', 'Low Threshold', 'Last Updated', 'Updated By'];
+// G Low Threshold | H Last Updated | I Updated By (see ARCHITECTURE.md §3).
 const DATA_RANGE = 'A2:I';
 
 /**
@@ -12,10 +12,11 @@ const DATA_RANGE = 'A2:I';
  * by the stable ID column so re-sorting rows in the sheet never corrupts writes.
  */
 export class SheetsStore {
-  constructor({ serviceAccount, sheetId, sheetTab, unitsTab }) {
+  constructor({ serviceAccount, sheetId, sheetTab, unitsTab, seedCsv }) {
     this.sheetId = sheetId;
     this.sheetTab = sheetTab;
     this.unitsTab = unitsTab;
+    this.seedCsv = seedCsv;
     const auth = new google.auth.GoogleAuth({
       credentials: serviceAccount,
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
@@ -24,8 +25,18 @@ export class SheetsStore {
   }
 
   async init() {
-    // Nothing to bootstrap; the seed script sets up the sheet. Verify access.
-    await this.list();
+    // Auto-seed on first boot so no terminal/seed script is needed. This is a
+    // no-op once the Inventory tab has data, so it's safe on every restart.
+    const result = await seedSheet({
+      sheets: this.sheets,
+      spreadsheetId: this.sheetId,
+      sheetTab: this.sheetTab,
+      unitsTab: this.unitsTab,
+      items: readSeedItems(this.seedCsv),
+    });
+    if (result.seeded) {
+      console.log(`Auto-seeded ${result.count} items into the sheet on first boot.`);
+    }
   }
 
   _range(a1) {
@@ -98,5 +109,3 @@ export class SheetsStore {
     return items.find((it) => it.id === id) || null;
   }
 }
-
-export { HEADER };
