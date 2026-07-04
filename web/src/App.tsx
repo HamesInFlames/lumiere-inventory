@@ -3,6 +3,7 @@ import { api } from './api';
 import type { Item, SortKey } from './types';
 import { Login } from './components/Login';
 import { ItemRow } from './components/ItemRow';
+import { ShareSheet } from './components/ShareSheet';
 
 const CATEGORY_ORDER = ['DRINKS', 'INGREDIENTS', 'CONTAINERS', 'SUPPLIES'];
 
@@ -18,6 +19,7 @@ export default function App() {
   const [category, setCategory] = useState<string>('ALL');
   const [lowOnly, setLowOnly] = useState(false);
   const [sort, setSort] = useState<SortKey>('category');
+  const [shareOpen, setShareOpen] = useState(false);
 
   useEffect(() => { localStorage.setItem('lumiere_name', name); }, [name]);
 
@@ -149,7 +151,18 @@ export default function App() {
 
           <div className="mt-1 flex items-center justify-between text-xs text-stone-400">
             <span>{visible.length} items{mode === 'local' ? ' · local mode' : ' · synced to Sheets'}</span>
-            <label className="flex items-center gap-1">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShareOpen(true)}
+                className="flex items-center gap-1 text-lumiere-gold font-medium"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
+                  <line x1="8.6" y1="13.5" x2="15.4" y2="17.5" /><line x1="15.4" y1="6.5" x2="8.6" y2="10.5" />
+                </svg>
+                Share
+              </button>
+              <label className="flex items-center gap-1">
               Sort
               <select
                 value={sort}
@@ -161,7 +174,8 @@ export default function App() {
                 <option value="quantity">Quantity</option>
                 <option value="updated">Last updated</option>
               </select>
-            </label>
+              </label>
+            </div>
           </div>
         </div>
       </header>
@@ -188,6 +202,15 @@ export default function App() {
           </div>
         )}
       </main>
+
+      {shareOpen && (
+        <ShareSheet
+          allItems={items}
+          viewItems={visible}
+          staffName={name}
+          onClose={() => setShareOpen(false)}
+        />
+      )}
     </div>
   );
 }
