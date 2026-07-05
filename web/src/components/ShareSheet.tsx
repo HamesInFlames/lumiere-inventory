@@ -5,13 +5,12 @@ import { formatShareMessage } from '../lib/formatShareMessage';
 interface Props {
   allItems: Item[];
   viewItems: Item[];
-  staffName: string;
   onClose: () => void;
 }
 
 const WHATSAPP_PHONE = (import.meta.env.VITE_WHATSAPP_PHONE || '').replace(/\D/g, '');
 
-export function ShareSheet({ allItems, viewItems, staffName, onClose }: Props) {
+export function ShareSheet({ allItems, viewItems, onClose }: Props) {
   const [scope, setScope] = useState<'low' | 'view'>('low');
   const [text, setText] = useState('');
   const [edited, setEdited] = useState(false);
@@ -19,12 +18,8 @@ export function ShareSheet({ allItems, viewItems, staffName, onClose }: Props) {
 
   // Regenerate the message when the scope changes (discards manual edits).
   const generated = useMemo(
-    () => formatShareMessage(scope === 'low' ? allItems : viewItems, {
-      scope,
-      staffName,
-      now: new Date(),
-    }),
-    [scope, allItems, viewItems, staffName],
+    () => formatShareMessage(scope === 'low' ? allItems : viewItems, { scope }),
+    [scope, allItems, viewItems],
   );
 
   useEffect(() => {

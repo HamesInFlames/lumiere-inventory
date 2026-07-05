@@ -207,7 +207,6 @@ export default function App() {
         <ShareSheet
           allItems={items}
           viewItems={visible}
-          staffName={name}
           onClose={() => setShareOpen(false)}
         />
       )}

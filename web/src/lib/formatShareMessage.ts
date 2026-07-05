@@ -5,22 +5,6 @@ const CATEGORY_ORDER = ['DRINKS', 'INGREDIENTS', 'CONTAINERS', 'SUPPLIES'];
 
 export interface ShareOptions {
   scope: 'low' | 'view';
-  staffName: string;
-  now: Date;
-}
-
-function formatStamp(now: Date): string {
-  // e.g. "Fri, Jul 4 · 5:12 PM"
-  const date = now.toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-  });
-  const time = now.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-  return `${date} · ${time}`;
 }
 
 /**
@@ -32,14 +16,10 @@ function formatStamp(now: Date): string {
  * list regardless of the caller's current filters.
  */
 export function formatShareMessage(items: Item[], opts: ShareOptions): string {
-  const { scope, staffName, now } = opts;
+  const { scope } = opts;
   const chosen = scope === 'low' ? items.filter((it) => it.low) : items;
 
   const lines: string[] = ['*Inventory*'];
-
-  const stamp = formatStamp(now);
-  const by = staffName.trim() ? ` · by ${staffName.trim()}` : '';
-  lines.push(`_${stamp}${by}_`);
 
   // Group by category, preserving CATEGORY_ORDER; unknown categories go last.
   const byCategory = new Map<string, Item[]>();

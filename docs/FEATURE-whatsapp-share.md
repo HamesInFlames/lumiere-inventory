@@ -18,7 +18,6 @@ WhatsApp renders `*bold*` and `_italic_`. Target output:
 
 ```
 *Inventory*
-_Fri, Jul 4 · 5:12 PM · by James_
 
 *DRINKS*
 • Milk: 0 carton left
@@ -35,8 +34,8 @@ _Fri, Jul 4 · 5:12 PM · by James_
 ```
 
 Formatting rules:
-- Header line is exactly `*Inventory*`; second line italic with date/time and
-  the staff name from the existing "Your name" field (omit "by X" if empty).
+- Header line is exactly `*Inventory*`; no date/time or staff-name line — go
+  straight to the first category group.
 - Group by **Category** (bold, in the existing CATEGORY_ORDER), items sorted
   by subcategory then name within each group. Skip empty groups.
 - Each line: `• {itemName}: {quantity} {unit} left` — nothing else. No
