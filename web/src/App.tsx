@@ -55,11 +55,12 @@ export default function App() {
     const prev = items;
     // Optimistic update.
     setItems((cur) =>
-      cur.map((it) =>
-        it.id === id
-          ? { ...it, ...p, low: (p.quantity ?? it.quantity) <= (p.lowThreshold ?? it.lowThreshold) }
-          : it,
-      ),
+      cur.map((it) => {
+        if (it.id !== id) return it;
+        const q = p.quantity ?? it.quantity;
+        const low = it.type === 'toggle' ? q <= 0 : q <= (p.lowThreshold ?? it.lowThreshold);
+        return { ...it, ...p, low };
+      }),
     );
     try {
       const updated = await api.patchItem(id, p, name || 'staff');

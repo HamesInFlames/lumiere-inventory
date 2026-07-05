@@ -53,6 +53,12 @@ monthly cost (Hobby plan, ~$5/mo).
 | G      | Low Threshold | Item counts as "low" when Quantity ≤ this                    |
 | H      | Last Updated  | ISO timestamp, written by app or Apps Script                 |
 | I      | Updated By    | Staff name/initials or "sheet"                               |
+| J      | Type          | `count` (numeric qty + steppers) or `toggle` (Need / Have). Dropdown. |
+
+**Item types.** Most items are `count` — tracked by number, edited with +/− steppers. Set an item's
+Type to `toggle` (via the column-J dropdown) to track it as a simple **Need / Have** switch instead;
+the app shows a two-state toggle rather than a counter, and the item counts as needing restock when
+set to "Need". Quantity still stores the state (0 = Need, 1 = Have), so no other columns change.
 
 **Tab `Units`**: single column of allowed units — `unit, bottle, bag, box, carton, case, pack,
 sleeve, jar, roll, tank, L, kg, lb`. The Unit column's dropdown (Data → Data validation) points at

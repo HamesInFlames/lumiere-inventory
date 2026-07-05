@@ -42,7 +42,11 @@ export function formatShareMessage(items: Item[], opts: ShareOptions): string {
     lines.push('');
     lines.push(`*${category}*`);
     for (const it of group) {
-      lines.push(`• ${it.itemName}: ${it.quantity} ${it.unit} left`);
+      if (it.type === 'toggle') {
+        lines.push(`• ${it.itemName}: ${it.quantity <= 0 ? 'needed' : 'ok'}`);
+      } else {
+        lines.push(`• ${it.itemName}: ${it.quantity} ${it.unit} left`);
+      }
     }
   }
 

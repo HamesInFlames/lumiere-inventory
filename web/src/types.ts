@@ -1,3 +1,5 @@
+export type ItemType = 'count' | 'toggle';
+
 export interface Item {
   id: string;
   category: string;
@@ -6,6 +8,7 @@ export interface Item {
   unit: string;
   quantity: number;
   lowThreshold: number;
+  type: ItemType;
   lastUpdated: string;
   updatedBy: string;
   low: boolean;

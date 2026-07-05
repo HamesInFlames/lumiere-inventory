@@ -49,6 +49,7 @@ export function readSeedItems(csvPath) {
     unit: r[idx.unit].trim(),
     quantity: Number(r[idx.quantity]) || 0,
     lowThreshold: Number(r[idx.low_threshold]) || 0,
+    type: idx.type !== undefined && r[idx.type]?.trim() === 'toggle' ? 'toggle' : 'count',
     lastUpdated: '',
     updatedBy: '',
   }));

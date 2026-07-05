@@ -1,7 +1,8 @@
 import { DEFAULT_UNITS } from './config.js';
 
 // Column layout of the Inventory tab (see ARCHITECTURE.md §3).
-export const HEADER = ['ID', 'Category', 'Subcategory', 'Item Name', 'Unit', 'Quantity', 'Low Threshold', 'Last Updated', 'Updated By'];
+// J Type = 'count' (numeric qty + steppers) or 'toggle' (Need / Don't-need).
+export const HEADER = ['ID', 'Category', 'Subcategory', 'Item Name', 'Unit', 'Quantity', 'Low Threshold', 'Last Updated', 'Updated By', 'Type'];
 
 /** Ensure the given tab titles exist; returns a title -> sheetId map. */
 export async function ensureTabs(sheets, spreadsheetId, titles) {
@@ -52,7 +53,7 @@ export async function seedSheet({ sheets, spreadsheetId, sheetTab, unitsTab, ite
   // Inventory tab.
   const rows = items.map((it) => [
     it.id, it.category, it.subcategory, it.itemName,
-    it.unit, it.quantity, it.lowThreshold, '', '',
+    it.unit, it.quantity, it.lowThreshold, '', '', it.type || 'count',
   ]);
   await sheets.spreadsheets.values.update({
     spreadsheetId,
@@ -77,6 +78,26 @@ export async function seedSheet({ sheets, spreadsheetId, sheetTab, unitsTab, ite
             },
             rule: {
               condition: { type: 'ONE_OF_RANGE', values: [{ userEnteredValue: `=${unitsTab}!$A$2:$A` }] },
+              showCustomUi: true,
+              strict: false,
+            },
+          },
+        },
+        {
+          // Type dropdown on column J: count / toggle.
+          setDataValidation: {
+            range: {
+              sheetId: invSheetId,
+              startRowIndex: 1,
+              endRowIndex: rows.length + 1,
+              startColumnIndex: 9, // column J
+              endColumnIndex: 10,
+            },
+            rule: {
+              condition: {
+                type: 'ONE_OF_LIST',
+                values: [{ userEnteredValue: 'count' }, { userEnteredValue: 'toggle' }],
+              },
               showCustomUi: true,
               strict: false,
             },

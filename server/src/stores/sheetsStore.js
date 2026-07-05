@@ -3,8 +3,8 @@ import { readSeedItems } from '../csv.js';
 import { seedSheet } from '../sheetsSeed.js';
 
 // A ID | B Category | C Subcategory | D Item Name | E Unit | F Quantity |
-// G Low Threshold | H Last Updated | I Updated By (see ARCHITECTURE.md §3).
-const DATA_RANGE = 'A2:I';
+// G Low Threshold | H Last Updated | I Updated By | J Type (ARCHITECTURE.md §3).
+const DATA_RANGE = 'A2:J';
 
 /**
  * Google Sheets-backed store. The sheet is the source of truth. Reads pull the
@@ -61,6 +61,7 @@ export class SheetsStore {
         lowThreshold: Number(r[6]) || 0,
         lastUpdated: r[7] || '',
         updatedBy: r[8] || '',
+        type: String(r[9] || '').trim() === 'toggle' ? 'toggle' : 'count',
       }));
   }
 

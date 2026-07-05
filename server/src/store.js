@@ -31,7 +31,11 @@ class InventoryStore {
 
   /** Attach derived fields (low-stock flag) to a raw item. */
   _decorate(item) {
-    return { ...item, low: item.quantity <= item.lowThreshold };
+    // Toggle items are "low" (needed) when off; count items when at/below threshold.
+    const low = item.type === 'toggle'
+      ? item.quantity <= 0
+      : item.quantity <= item.lowThreshold;
+    return { ...item, low };
   }
 
   async refresh() {
