@@ -111,21 +111,28 @@ export default function App() {
   }, [visible, sort]);
 
   if (authed === null) {
-    return <div className="min-h-screen flex items-center justify-center text-stone-400">Loading…</div>;
+    return <div className="min-h-screen flex items-center justify-center text-brand-inkSoft">Loading…</div>;
   }
   if (!authed) return <Login onAuthed={() => setAuthed(true)} />;
 
   return (
     <div className="min-h-screen pb-10">
-      <header className="sticky top-0 z-10 bg-lumiere-cream/95 backdrop-blur border-b border-stone-200">
+      <header className="sticky top-0 z-10 bg-brand-bg/95 backdrop-blur border-b border-brand-line">
         <div className="max-w-2xl mx-auto px-4 pt-3 pb-2">
-          <div className="flex items-baseline justify-between gap-2">
-            <h1 className="text-xl font-bold text-lumiere-gold truncate">Lumière Inventory</h1>
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <div className="text-gradient font-display font-light text-2xl leading-none tracking-[0.28em]">
+                LUMIÈRE
+              </div>
+              <div className="text-[10px] tracking-[0.35em] text-brand-inkSoft font-display">
+                PÂTISSERIE
+              </div>
+            </div>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
-              className="w-32 shrink-0 text-sm rounded-lg border border-stone-200 px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-lumiere-gold"
+              className="w-32 shrink-0 text-sm rounded-lg border border-brand-line px-2 py-1 bg-brand-bg focus:outline-none focus:ring-2 focus:ring-brand-rose"
             />
           </div>
 
@@ -133,7 +140,7 @@ export default function App() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search items…"
-            className="mt-2 w-full rounded-lg border border-stone-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-lumiere-gold"
+            className="mt-2 w-full rounded-lg border border-brand-line px-3 py-2 bg-brand-bg focus:outline-none focus:ring-2 focus:ring-brand-rose"
           />
 
           <div className="mt-2 flex items-center gap-2 overflow-x-auto pb-1">
@@ -145,12 +152,12 @@ export default function App() {
                 {c.charAt(0) + c.slice(1).toLowerCase()}
               </Chip>
             ))}
-            <Chip active={lowOnly} tone="amber" onClick={() => { setLowOnly((v) => !v); }}>
+            <Chip active={lowOnly} tone="need" onClick={() => { setLowOnly((v) => !v); }}>
               Low{lowCount ? ` (${lowCount})` : ''}
             </Chip>
           </div>
 
-          <div className="mt-1 flex flex-wrap items-center justify-between gap-y-1 text-xs text-stone-400">
+          <div className="mt-1 flex flex-wrap items-center justify-between gap-y-1 text-xs text-brand-inkSoft">
             <span>
               {visible.length} items
               <span className="hidden sm:inline">{mode === 'local' ? ' · local mode' : ' · synced to Sheets'}</span>
@@ -159,7 +166,7 @@ export default function App() {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShareOpen(true)}
-                className="flex items-center gap-1 text-lumiere-gold font-medium"
+                className="flex items-center gap-1 text-brand-ink font-medium"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
@@ -172,7 +179,7 @@ export default function App() {
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value as SortKey)}
-                className="rounded border border-stone-200 bg-white px-1.5 py-0.5"
+                className="rounded border border-brand-line bg-brand-bg px-1.5 py-0.5"
               >
                 <option value="category">Category</option>
                 <option value="name">Name</option>
@@ -183,19 +190,21 @@ export default function App() {
             </div>
           </div>
         </div>
+        {/* Brand gradient underline — the site's nav-accent motif. */}
+        <div className="h-[2px] brand-gradient" />
       </header>
 
       <main className="max-w-2xl mx-auto px-4 mt-3">
         {!loaded ? (
-          <p className="text-center text-stone-400 py-10">Loading inventory…</p>
+          <p className="text-center text-brand-inkSoft py-10">Loading inventory…</p>
         ) : visible.length === 0 ? (
-          <p className="text-center text-stone-400 py-10">No items match.</p>
+          <p className="text-center text-brand-inkSoft py-10">No items match.</p>
         ) : (
-          <div className="rounded-2xl overflow-hidden border border-stone-200 shadow-sm">
+          <div className="rounded-2xl overflow-hidden border border-brand-line shadow-sm">
             {groups.map((g) => (
               <div key={g.key || 'all'}>
                 {g.label && (
-                  <div className="px-4 py-1.5 bg-stone-50 text-xs font-semibold uppercase tracking-wide text-stone-500 border-b border-stone-100">
+                  <div className="px-4 py-1.5 bg-brand-surface text-xs font-semibold uppercase tracking-wide text-brand-inkSoft border-b border-brand-line">
                     {g.label}
                   </div>
                 )}
@@ -220,16 +229,18 @@ export default function App() {
 }
 
 function Chip({
-  active, onClick, children, tone = 'gold',
+  active, onClick, children, tone = 'ink',
 }: {
-  active: boolean; onClick: () => void; children: React.ReactNode; tone?: 'gold' | 'amber';
+  active: boolean; onClick: () => void; children: React.ReactNode; tone?: 'ink' | 'need';
 }) {
-  const activeCls = tone === 'amber' ? 'bg-amber-500 text-white border-amber-500' : 'bg-lumiere-gold text-white border-lumiere-gold';
+  const activeCls = tone === 'need'
+    ? 'bg-brand-need text-white border-brand-need'
+    : 'bg-brand-ink text-white border-brand-ink';
   return (
     <button
       onClick={onClick}
       className={`shrink-0 text-sm rounded-full px-3 py-1 border transition ${
-        active ? activeCls : 'bg-white text-stone-600 border-stone-300'
+        active ? activeCls : 'bg-brand-bg text-brand-inkSoft border-brand-line'
       }`}
     >
       {children}

@@ -56,22 +56,22 @@ export function ShareSheet({ allItems, viewItems, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="w-full sm:max-w-lg bg-white rounded-t-2xl sm:rounded-2xl shadow-xl p-4 max-h-[90vh] overflow-y-auto"
+        className="w-full sm:max-w-lg bg-brand-bg rounded-t-2xl sm:rounded-2xl shadow-xl p-4 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-bold text-lumiere-gold">Share inventory</h2>
-          <button onClick={onClose} aria-label="Close" className="w-8 h-8 rounded-full text-stone-500 hover:bg-stone-100 text-xl leading-none">
+          <h2 className="text-lg font-bold text-brand-ink">Share inventory</h2>
+          <button onClick={onClose} aria-label="Close" className="w-8 h-8 rounded-full text-brand-inkSoft hover:bg-brand-surface text-xl leading-none">
             ×
           </button>
         </div>
 
         {/* Scope toggle */}
-        <div className="flex rounded-lg border border-stone-200 p-0.5 mb-3 text-sm">
+        <div className="flex rounded-lg border border-brand-line p-0.5 mb-3 text-sm">
           <button
             onClick={() => setScope('low')}
             className={`flex-1 rounded-md py-1.5 font-medium transition ${
-              scope === 'low' ? 'bg-lumiere-gold text-white' : 'text-stone-600'
+              scope === 'low' ? 'bg-brand-ink text-white' : 'text-brand-inkSoft'
             }`}
           >
             Low stock only
@@ -79,7 +79,7 @@ export function ShareSheet({ allItems, viewItems, onClose }: Props) {
           <button
             onClick={() => setScope('view')}
             className={`flex-1 rounded-md py-1.5 font-medium transition ${
-              scope === 'view' ? 'bg-lumiere-gold text-white' : 'text-stone-600'
+              scope === 'view' ? 'bg-brand-ink text-white' : 'text-brand-inkSoft'
             }`}
           >
             Current view
@@ -91,9 +91,9 @@ export function ShareSheet({ allItems, viewItems, onClose }: Props) {
           value={text}
           onChange={(e) => { setText(e.target.value); setEdited(true); }}
           rows={12}
-          className="w-full rounded-lg border border-stone-300 px-3 py-2 font-mono text-sm resize-y focus:outline-none focus:ring-2 focus:ring-lumiere-gold"
+          className="w-full rounded-lg border border-brand-line px-3 py-2 font-mono text-sm resize-y focus:outline-none focus:ring-2 focus:ring-brand-rose"
         />
-        <p className="text-xs text-stone-400 mt-1 mb-3">
+        <p className="text-xs text-brand-inkSoft mt-1 mb-3">
           {edited ? 'Edited — switching scope will regenerate this.' : 'You can edit before sending.'}
         </p>
 
@@ -109,14 +109,14 @@ export function ShareSheet({ allItems, viewItems, onClose }: Props) {
           {canWebShare && (
             <button
               onClick={webShare}
-              className="flex-1 bg-stone-100 text-stone-700 rounded-lg py-2.5 font-medium hover:bg-stone-200 transition"
+              className="flex-1 bg-brand-surface text-brand-ink rounded-lg py-2.5 font-medium hover:bg-brand-line transition"
             >
               Share…
             </button>
           )}
           <button
             onClick={copy}
-            className="flex-1 bg-stone-100 text-stone-700 rounded-lg py-2.5 font-medium hover:bg-stone-200 transition"
+            className="flex-1 bg-brand-surface text-brand-ink rounded-lg py-2.5 font-medium hover:bg-brand-line transition"
           >
             {copied ? 'Copied ✓' : 'Copy'}
           </button>

@@ -4,8 +4,8 @@
   "description": "Live bar inventory tracking for Lumière Pâtisserie",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#faf7ef",
-  "theme_color": "#8a6d1f",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "icons": [
     {
       "src": "/icon.svg",
