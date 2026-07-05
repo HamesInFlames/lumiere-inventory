@@ -119,13 +119,13 @@ export default function App() {
     <div className="min-h-screen pb-10">
       <header className="sticky top-0 z-10 bg-lumiere-cream/95 backdrop-blur border-b border-stone-200">
         <div className="max-w-2xl mx-auto px-4 pt-3 pb-2">
-          <div className="flex items-baseline justify-between">
-            <h1 className="text-xl font-bold text-lumiere-gold">Lumière Inventory</h1>
+          <div className="flex items-baseline justify-between gap-2">
+            <h1 className="text-xl font-bold text-lumiere-gold truncate">Lumière Inventory</h1>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
-              className="w-28 text-sm rounded-lg border border-stone-200 px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-lumiere-gold"
+              className="w-32 shrink-0 text-sm rounded-lg border border-stone-200 px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-lumiere-gold"
             />
           </div>
 
@@ -150,8 +150,12 @@ export default function App() {
             </Chip>
           </div>
 
-          <div className="mt-1 flex items-center justify-between text-xs text-stone-400">
-            <span>{visible.length} items{mode === 'local' ? ' · local mode' : ' · synced to Sheets'}</span>
+          <div className="mt-1 flex flex-wrap items-center justify-between gap-y-1 text-xs text-stone-400">
+            <span>
+              {visible.length} items
+              <span className="hidden sm:inline">{mode === 'local' ? ' · local mode' : ' · synced to Sheets'}</span>
+              <span className="sm:hidden">{mode === 'local' ? ' · local' : ' · synced'}</span>
+            </span>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShareOpen(true)}
