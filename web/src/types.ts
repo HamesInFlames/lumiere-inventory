@@ -14,9 +14,17 @@ export interface Item {
   low: boolean;
 }
 
+export interface Note {
+  id: string;
+  text: string;
+  by: string;
+  created: string;
+}
+
 export interface ItemsResponse {
   items: Item[];
   units: string[];
+  notes: Note[];
   lastSync: string | null;
   mode: 'local' | 'sheets';
 }

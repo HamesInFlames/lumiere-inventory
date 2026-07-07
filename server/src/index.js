@@ -25,6 +25,7 @@ app.get('/api/session', async (request) => ({ authed: isAuthed(request) }));
 app.get('/api/items', { preHandler: requireAuth }, async () => ({
   items: store.getItems(),
   units: store.getUnits(),
+  notes: store.getNotes(),
   lastSync: store.getLastSync(),
   mode: config.mode,
 }));
@@ -44,6 +45,21 @@ app.patch('/api/items/:id', { preHandler: requireAuth }, async (request, reply) 
   const updated = await store.updateItem(id, patch, updatedBy);
   if (!updated) return reply.code(404).send({ error: 'item not found' });
   return { item: updated };
+});
+
+// ---- Notes (auth required) ----
+app.post('/api/notes', { preHandler: requireAuth }, async (request, reply) => {
+  const { text, by } = request.body || {};
+  const trimmed = String(text || '').trim().slice(0, 500);
+  if (!trimmed) return reply.code(400).send({ error: 'note text required' });
+  const note = await store.addNote(trimmed, by);
+  return { note };
+});
+
+app.delete('/api/notes/:id', { preHandler: requireAuth }, async (request, reply) => {
+  const ok = await store.deleteNote(request.params.id);
+  if (!ok) return reply.code(404).send({ error: 'note not found' });
+  return { ok: true };
 });
 
 // ---- Server-Sent Events: live updates to all connected clients ----

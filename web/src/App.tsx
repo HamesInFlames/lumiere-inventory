@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from './api';
-import type { Item, SortKey } from './types';
+import type { Item, Note, SortKey } from './types';
 import { Login } from './components/Login';
 import { ItemRow } from './components/ItemRow';
 import { ShareSheet } from './components/ShareSheet';
+import { NotesPanel } from './components/NotesPanel';
 
 const CATEGORY_ORDER = ['DRINKS', 'INGREDIENTS', 'CONTAINERS', 'SUPPLIES'];
 
@@ -11,6 +12,7 @@ export default function App() {
   const [authed, setAuthed] = useState<boolean | null>(null);
   const [items, setItems] = useState<Item[]>([]);
   const [units, setUnits] = useState<string[]>([]);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [mode, setMode] = useState<string>('');
   const [loaded, setLoaded] = useState(false);
 
@@ -20,6 +22,7 @@ export default function App() {
   const [lowOnly, setLowOnly] = useState(false);
   const [sort, setSort] = useState<SortKey>('category');
   const [shareOpen, setShareOpen] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
 
   useEffect(() => { localStorage.setItem('lumiere_name', name); }, [name]);
 
@@ -31,6 +34,7 @@ export default function App() {
     const data = await api.getItems();
     setItems(data.items);
     setUnits(data.units);
+    setNotes(data.notes || []);
     setMode(data.mode);
     setLoaded(true);
   }
@@ -48,8 +52,30 @@ export default function App() {
       const { items: fresh } = JSON.parse((e as MessageEvent).data);
       setItems(fresh);
     });
+    es.addEventListener('notes-updated', (e) => {
+      const { notes: fresh } = JSON.parse((e as MessageEvent).data);
+      setNotes(fresh);
+    });
     return () => es.close();
   }, [authed]);
+
+  async function addNote(text: string) {
+    try {
+      const note = await api.addNote(text, name || 'staff');
+      // SSE will also deliver this; de-dupe by id.
+      setNotes((cur) => (cur.some((n) => n.id === note.id) ? cur : [...cur, note]));
+    } catch { /* ignore; nothing persisted */ }
+  }
+
+  async function deleteNote(id: string) {
+    const prev = notes;
+    setNotes((cur) => cur.filter((n) => n.id !== id)); // optimistic
+    try {
+      await api.deleteNote(id);
+    } catch {
+      setNotes(prev); // rollback
+    }
+  }
 
   async function patch(id: string, p: { quantity?: number; unit?: string; lowThreshold?: number }) {
     const prev = items;
@@ -118,7 +144,7 @@ export default function App() {
   return (
     <div className="min-h-screen pb-10">
       <header className="sticky top-0 z-10 bg-brand-bg/95 backdrop-blur border-b border-brand-line">
-        <div className="max-w-2xl mx-auto px-4 pt-3 pb-2">
+        <div className="max-w-2xl lg:max-w-4xl mx-auto px-4 pt-3 pb-2">
           <div className="flex items-center justify-between gap-2">
             <div className="min-w-0">
               <div className="text-gradient font-display font-light text-2xl leading-none tracking-[0.28em]">
@@ -165,6 +191,12 @@ export default function App() {
             </span>
             <div className="flex items-center gap-3">
               <button
+                onClick={() => setNotesOpen(true)}
+                className="lg:hidden flex items-center gap-1 text-brand-ink font-medium"
+              >
+                Notes{notes.length ? ` (${notes.length})` : ''}
+              </button>
+              <button
                 onClick={() => setShareOpen(true)}
                 className="flex items-center gap-1 text-brand-ink font-medium"
               >
@@ -194,27 +226,34 @@ export default function App() {
         <div className="h-[2px] brand-gradient" />
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 mt-3">
-        {!loaded ? (
-          <p className="text-center text-brand-inkSoft py-10">Loading inventory…</p>
-        ) : visible.length === 0 ? (
-          <p className="text-center text-brand-inkSoft py-10">No items match.</p>
-        ) : (
-          <div className="rounded-2xl overflow-hidden border border-brand-line shadow-sm">
-            {groups.map((g) => (
-              <div key={g.key || 'all'}>
-                {g.label && (
-                  <div className="px-4 py-1.5 bg-brand-surface text-xs font-semibold uppercase tracking-wide text-brand-inkSoft border-b border-brand-line">
-                    {g.label}
-                  </div>
-                )}
-                {g.items.map((it) => (
-                  <ItemRow key={it.id} item={it} units={units} onPatch={(p) => patch(it.id, p)} />
-                ))}
-              </div>
-            ))}
-          </div>
-        )}
+      <main className="max-w-2xl lg:max-w-4xl mx-auto px-4 mt-3 lg:flex lg:gap-4 lg:items-start">
+        <div className="lg:flex-1 lg:min-w-0">
+          {!loaded ? (
+            <p className="text-center text-brand-inkSoft py-10">Loading inventory…</p>
+          ) : visible.length === 0 ? (
+            <p className="text-center text-brand-inkSoft py-10">No items match.</p>
+          ) : (
+            <div className="rounded-2xl overflow-hidden border border-brand-line shadow-sm">
+              {groups.map((g) => (
+                <div key={g.key || 'all'}>
+                  {g.label && (
+                    <div className="px-4 py-1.5 bg-brand-surface text-xs font-semibold uppercase tracking-wide text-brand-inkSoft border-b border-brand-line">
+                      {g.label}
+                    </div>
+                  )}
+                  {g.items.map((it) => (
+                    <ItemRow key={it.id} item={it} units={units} onPatch={(p) => patch(it.id, p)} />
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Notes: right column on desktop (always visible). */}
+        <aside className="hidden lg:block lg:w-72 shrink-0 lg:sticky lg:top-24">
+          <NotesPanel notes={notes} onAdd={addNote} onDelete={deleteNote} />
+        </aside>
       </main>
 
       {shareOpen && (
@@ -223,6 +262,26 @@ export default function App() {
           viewItems={visible}
           onClose={() => setShareOpen(false)}
         />
+      )}
+
+      {/* Notes as a bottom sheet on mobile. */}
+      {notesOpen && (
+        <div
+          className="fixed inset-0 z-30 flex items-end sm:items-center justify-center bg-black/40 lg:hidden"
+          onClick={() => setNotesOpen(false)}
+        >
+          <div
+            className="w-full sm:max-w-lg bg-brand-bg rounded-t-2xl sm:rounded-2xl shadow-xl p-4 max-h-[85vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-end -mt-1 -mr-1 mb-1">
+              <button onClick={() => setNotesOpen(false)} aria-label="Close" className="w-8 h-8 rounded-full text-brand-inkSoft hover:bg-brand-surface text-xl leading-none">
+                ×
+              </button>
+            </div>
+            <NotesPanel notes={notes} onAdd={addNote} onDelete={deleteNote} />
+          </div>
+        </div>
       )}
     </div>
   );

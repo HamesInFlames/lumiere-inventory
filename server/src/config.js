@@ -37,6 +37,7 @@ export const config = {
   sheetId,
   sheetTab: process.env.SHEET_TAB || 'Inventory',
   unitsTab: process.env.UNITS_TAB || 'Units',
+  notesTab: process.env.NOTES_TAB || 'Notes',
   webhookSecret: process.env.WEBHOOK_SECRET || 'dev-secret',
   appPassword: process.env.APP_PASSWORD || 'lumiere',
   pollIntervalMs: Number(process.env.POLL_INTERVAL_MS) || 60_000,

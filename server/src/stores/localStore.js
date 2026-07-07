@@ -1,7 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { readSeedItems } from '../csv.js';
 import { DEFAULT_UNITS } from '../config.js';
+
+export function newNoteId() {
+  return `note-${crypto.randomBytes(4).toString('hex')}`;
+}
 
 /**
  * Local JSON-backed store. Used automatically when no Google credentials are
@@ -36,6 +41,29 @@ export class LocalStore {
 
   async getUnits() {
     return this._read().units;
+  }
+
+  async listNotes() {
+    return this._read().notes || [];
+  }
+
+  async addNote(text, by, created) {
+    const db = this._read();
+    if (!db.notes) db.notes = [];
+    const note = { id: newNoteId(), text, by: by || 'staff', created };
+    db.notes.push(note);
+    this._write(db);
+    return note;
+  }
+
+  async deleteNote(id) {
+    const db = this._read();
+    if (!db.notes) db.notes = [];
+    const idx = db.notes.findIndex((n) => n.id === id);
+    if (idx === -1) return false;
+    db.notes.splice(idx, 1);
+    this._write(db);
+    return true;
   }
 
   async updateItem(id, patch, updatedBy) {

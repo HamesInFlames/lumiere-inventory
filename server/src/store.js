@@ -12,7 +12,7 @@ class InventoryStore {
     this.backend = config.mode === 'sheets'
       ? new SheetsStore(config)
       : new LocalStore({ dbPath: config.localDbPath, seedCsv: config.seedCsv });
-    this.cache = { items: [], units: [], lastSync: null };
+    this.cache = { items: [], units: [], notes: [], lastSync: null };
     this.listeners = new Set();
     this._timer = null;
   }
@@ -39,16 +39,19 @@ class InventoryStore {
   }
 
   async refresh() {
-    const [items, units] = await Promise.all([
+    const [items, units, notes] = await Promise.all([
       this.backend.list(),
       this.backend.getUnits(),
+      this.backend.listNotes(),
     ]);
     this.cache = {
       items: items.map((it) => this._decorate(it)),
       units,
+      notes,
       lastSync: nowIso(),
     };
     this._emit({ type: 'full-refresh', items: this.cache.items });
+    this._emit({ type: 'notes-updated', notes: this.cache.notes });
     return this.cache;
   }
 
@@ -58,6 +61,25 @@ class InventoryStore {
 
   getUnits() {
     return this.cache.units;
+  }
+
+  getNotes() {
+    return this.cache.notes;
+  }
+
+  async addNote(text, by) {
+    const note = await this.backend.addNote(text, by, nowIso());
+    this.cache.notes = [...this.cache.notes, note];
+    this._emit({ type: 'notes-updated', notes: this.cache.notes });
+    return note;
+  }
+
+  async deleteNote(id) {
+    const ok = await this.backend.deleteNote(id);
+    if (!ok) return false;
+    this.cache.notes = this.cache.notes.filter((n) => n.id !== id);
+    this._emit({ type: 'notes-updated', notes: this.cache.notes });
+    return true;
   }
 
   getLastSync() {
