@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { readSeedItems } from '../csv.js';
+import { readSeedItems, normStatus } from '../csv.js';
 import { DEFAULT_UNITS } from '../config.js';
 
 export function newNoteId() {
@@ -36,7 +36,8 @@ export class LocalStore {
   }
 
   async list() {
-    return this._read().items;
+    // Normalize status on read so a pre-migration local file still works.
+    return this._read().items.map((it) => ({ ...it, status: normStatus(it.status) }));
   }
 
   async getUnits() {
@@ -77,8 +78,8 @@ export class LocalStore {
       item.unit = patch.unit;
       if (!db.units.includes(patch.unit)) db.units.push(patch.unit);
     }
-    if (typeof patch.lowThreshold === 'number' && !Number.isNaN(patch.lowThreshold)) {
-      item.lowThreshold = Math.max(0, patch.lowThreshold);
+    if (patch.status !== undefined) {
+      item.status = normStatus(patch.status);
     }
     item.lastUpdated = patch.lastUpdated;
     item.updatedBy = updatedBy || 'staff';

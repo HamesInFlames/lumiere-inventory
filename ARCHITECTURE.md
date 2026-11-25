@@ -48,22 +48,23 @@ monthly cost (Hobby plan, ~$5/mo).
 | B      | Category      | DRINKS / INGREDIENTS / CONTAINERS / SUPPLIES                  |
 | C      | Subcategory   | Milk & Dairy, Coffee, Teas, Syrups, …                        |
 | D      | Item Name     | Display name                                                 |
-| E      | Unit          | Data-validation dropdown fed by the `Units` tab              |
-| F      | Quantity      | Number                                                       |
-| G      | Low Threshold | Item counts as "low" when Quantity ≤ this                    |
+| E      | Unit          | Free text; a non-strict dropdown fed by the `Units` tab offers suggestions |
+| F      | Quantity      | Number — the live count of what's left                       |
+| G      | Status        | `have` / `low` / `urgent` — staff-set restock flag. Dropdown. |
 | H      | Last Updated  | ISO timestamp, written by app or Apps Script                 |
 | I      | Updated By    | Staff name/initials or "sheet"                               |
-| J      | Type          | `count` (numeric qty + steppers) or `toggle` (Need / Have). Dropdown. |
 
-**Item types.** Most items are `count` — tracked by number, edited with +/− steppers. Set an item's
-Type to `toggle` (via the column-J dropdown) to track it as a simple **Need / Have** switch instead;
-the app shows a two-state toggle rather than a counter, and the item counts as needing restock when
-set to "Need". Quantity still stores the state (0 = Need, 1 = Have), so no other columns change.
+**Every item is a live count plus a status.** Staff count what's left with +/− steppers (Quantity,
+in its Unit) and set a **Status** — `have`, `low`, or `urgent`. An item "needs restock" when its
+status is `low` or `urgent`; there is no automatic threshold. (Earlier versions had a `Low Threshold`
+column and a `count`/`toggle` `Type` column; both were retired in favour of the manual status. The
+server migrates an existing sheet in place on boot — see `sheetsSeed.js#migrateSchema` — repurposing
+column G and clearing the old Type column non-destructively.)
 
-**Tab `Units`**: single column of allowed units — `unit, bottle, bag, box, carton, case, pack,
-sleeve, jar, roll, tank, L, kg, lb`. The Unit column's dropdown (Data → Data validation) points at
-this range, and the frontend fetches the same list for its own dropdown, so adding a unit in the
-sheet adds it everywhere.
+**Tab `Units`**: single column of suggested units — `unit, bottle, bag, box, carton, case, pack,
+sleeve, jar, roll, tank, L, kg, lb`. The Unit column's dropdown (Data → Data validation) is
+non-strict, so any unit can be typed; the frontend fetches the same list as free-text suggestions,
+so adding a unit in the sheet offers it everywhere.
 
 **Tab `Log`** (optional, phase 2): append-only audit trail of every change (who, what, old→new).
 
@@ -126,9 +127,10 @@ all reads and writes being single-cell updates, a full bar staff won't get near 
 - **Views**:
   - **All items** — table/card list with search, sort (name, quantity, category, last updated), and
     category/subcategory filter chips.
-  - **Low stock** — items where `quantity ≤ lowThreshold`, badge count in the nav; low rows also
-    highlighted amber/red in the main list.
-  - **Item row controls** — big +/− steppers (tap-friendly), tap-to-type exact count, unit dropdown.
+  - **Low stock** — items whose status is `low` or `urgent`, badge count in the nav; those rows are
+    also highlighted amber/red in the main list.
+  - **Item row controls** — big +/− steppers (tap-friendly), tap-to-type exact count, free-text unit,
+    and a Have / Low / Urgent status toggle.
 - **Live updates**: subscribes to `/api/stream`; optimistic UI on edits (update immediately, roll
   back on API error).
 - **Auth (phase 1)**: one shared staff password → session cookie, plus a free-text "your name"

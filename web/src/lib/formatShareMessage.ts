@@ -42,11 +42,8 @@ export function formatShareMessage(items: Item[], opts: ShareOptions): string {
     lines.push('');
     lines.push(`*${category}*`);
     for (const it of group) {
-      if (it.type === 'toggle') {
-        lines.push(`• ${it.itemName}: ${it.quantity <= 0 ? 'needed' : 'ok'}`);
-      } else {
-        lines.push(`• ${it.itemName}: ${it.quantity} ${it.unit} left`);
-      }
+      const flag = it.status === 'urgent' ? ' — URGENT' : it.status === 'low' ? ' — low' : '';
+      lines.push(`• ${it.itemName}: ${it.quantity} ${it.unit}${flag}`);
     }
   }
 
@@ -56,7 +53,7 @@ export function formatShareMessage(items: Item[], opts: ShareOptions): string {
   if (lowCount === 0) {
     lines.push('All items are stocked. ✅');
   } else {
-    lines.push(`${lowCount} item${lowCount === 1 ? '' : 's'} need${lowCount === 1 ? 's' : ''} restocking.`);
+    lines.push(`${lowCount} item${lowCount === 1 ? '' : 's'} to restock.`);
   }
 
   return lines.join('\n');

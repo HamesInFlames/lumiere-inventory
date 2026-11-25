@@ -35,6 +35,12 @@ export function parseCsv(text) {
   return rows;
 }
 
+/** Coerce any cell value to a valid status; anything unrecognized is 'have'. */
+export function normStatus(value) {
+  const s = String(value ?? '').trim().toLowerCase();
+  return s === 'low' || s === 'urgent' ? s : 'have';
+}
+
 /** Read the seed CSV into normalized item objects. */
 export function readSeedItems(csvPath) {
   const text = fs.readFileSync(csvPath, 'utf8');
@@ -48,8 +54,7 @@ export function readSeedItems(csvPath) {
     itemName: r[idx.item_name].trim(),
     unit: r[idx.unit].trim(),
     quantity: Number(r[idx.quantity]) || 0,
-    lowThreshold: Number(r[idx.low_threshold]) || 0,
-    type: idx.type !== undefined && r[idx.type]?.trim() === 'toggle' ? 'toggle' : 'count',
+    status: normStatus(idx.status !== undefined ? r[idx.status] : 'have'),
     lastUpdated: '',
     updatedBy: '',
   }));

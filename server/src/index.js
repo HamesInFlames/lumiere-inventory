@@ -34,11 +34,16 @@ app.get('/api/units', { preHandler: requireAuth }, async () => ({ units: store.g
 
 app.patch('/api/items/:id', { preHandler: requireAuth }, async (request, reply) => {
   const { id } = request.params;
-  const { quantity, unit, lowThreshold, updatedBy } = request.body || {};
+  const { quantity, unit, status, updatedBy } = request.body || {};
   const patch = {};
   if (quantity !== undefined) patch.quantity = Number(quantity);
   if (unit !== undefined) patch.unit = String(unit);
-  if (lowThreshold !== undefined) patch.lowThreshold = Number(lowThreshold);
+  if (status !== undefined) {
+    if (!['have', 'low', 'urgent'].includes(status)) {
+      return reply.code(400).send({ error: 'invalid status' });
+    }
+    patch.status = status;
+  }
   if (Object.keys(patch).length === 0) {
     return reply.code(400).send({ error: 'no updatable fields provided' });
   }

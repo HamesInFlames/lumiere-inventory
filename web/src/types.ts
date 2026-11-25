@@ -1,4 +1,4 @@
-export type ItemType = 'count' | 'toggle';
+export type ItemStatus = 'have' | 'low' | 'urgent';
 
 export interface Item {
   id: string;
@@ -7,11 +7,10 @@ export interface Item {
   itemName: string;
   unit: string;
   quantity: number;
-  lowThreshold: number;
-  type: ItemType;
+  status: ItemStatus;
   lastUpdated: string;
   updatedBy: string;
-  low: boolean;
+  low: boolean; // derived: status !== 'have'
 }
 
 export interface Note {

@@ -1,4 +1,4 @@
-import type { Item, ItemsResponse, Note } from './types';
+import type { Item, ItemStatus, ItemsResponse, Note } from './types';
 
 async function json<T>(res: Response): Promise<T> {
   if (!res.ok) throw new Error((await res.json().catch(() => ({})))?.error || res.statusText);
@@ -26,7 +26,7 @@ export const api = {
 
   async patchItem(
     id: string,
-    patch: { quantity?: number; unit?: string; lowThreshold?: number },
+    patch: { quantity?: number; unit?: string; status?: ItemStatus },
     updatedBy: string,
   ): Promise<Item> {
     const res = await fetch(`/api/items/${encodeURIComponent(id)}`, {

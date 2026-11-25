@@ -1,11 +1,11 @@
 import { google } from 'googleapis';
-import { readSeedItems } from '../csv.js';
-import { seedSheet, ensureTabs } from '../sheetsSeed.js';
+import { readSeedItems, normStatus } from '../csv.js';
+import { seedSheet, ensureTabs, migrateSchema } from '../sheetsSeed.js';
 import { newNoteId } from './localStore.js';
 
 // A ID | B Category | C Subcategory | D Item Name | E Unit | F Quantity |
-// G Low Threshold | H Last Updated | I Updated By | J Type (ARCHITECTURE.md §3).
-const DATA_RANGE = 'A2:J';
+// G Status | H Last Updated | I Updated By (ARCHITECTURE.md §3).
+const DATA_RANGE = 'A2:I';
 
 /**
  * Google Sheets-backed store. The sheet is the source of truth. Reads pull the
@@ -38,6 +38,16 @@ export class SheetsStore {
     });
     if (result.seeded) {
       console.log(`Auto-seeded ${result.count} items into the sheet on first boot.`);
+    }
+    // Migrate an existing sheet from the old schema (Low Threshold + Type) to
+    // the new Status schema. Idempotent: a no-op once already migrated.
+    const migration = await migrateSchema({
+      sheets: this.sheets,
+      spreadsheetId: this.sheetId,
+      sheetTab: this.sheetTab,
+    });
+    if (migration.migrated) {
+      console.log(`Migrated ${migration.count} rows to the Status schema (Low Threshold + Type retired).`);
     }
     // Ensure the Notes tab exists (works on the already-live sheet too).
     await ensureTabs(this.sheets, this.sheetId, [this.notesTab]);
@@ -74,10 +84,9 @@ export class SheetsStore {
         itemName: r[3] || '',
         unit: r[4] || 'unit',
         quantity: Number(r[5]) || 0,
-        lowThreshold: Number(r[6]) || 0,
+        status: normStatus(r[6]),
         lastUpdated: r[7] || '',
         updatedBy: r[8] || '',
-        type: String(r[9] || '').trim() === 'toggle' ? 'toggle' : 'count',
       }));
   }
 
@@ -111,8 +120,8 @@ export class SheetsStore {
     if (typeof patch.quantity === 'number' && !Number.isNaN(patch.quantity)) {
       data.push({ range: this._range(`F${row}`), values: [[Math.max(0, patch.quantity)]] });
     }
-    if (typeof patch.lowThreshold === 'number' && !Number.isNaN(patch.lowThreshold)) {
-      data.push({ range: this._range(`G${row}`), values: [[Math.max(0, patch.lowThreshold)]] });
+    if (patch.status !== undefined) {
+      data.push({ range: this._range(`G${row}`), values: [[normStatus(patch.status)]] });
     }
     data.push({ range: this._range(`H${row}`), values: [[patch.lastUpdated]] });
     data.push({ range: this._range(`I${row}`), values: [[updatedBy || 'staff']] });
