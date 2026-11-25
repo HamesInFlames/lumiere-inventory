@@ -34,8 +34,9 @@ test('applyCount builds the right surgical plan and nothing is missing', async (
 
   assert.deepEqual(plan.missing, [], 'all expected ids present');
 
-  // milk renamed to large bag, qty 3 (D + F cell updates on milk's row = row 2).
+  // milk renamed to large bag, unit bag, qty 3 (D/E/F updates on milk's row = row 2).
   assert.deepEqual(cellVal(plan, 'D2'), ['Milk (large bag)']);
+  assert.deepEqual(cellVal(plan, 'E2'), ['bag']);
   assert.deepEqual(cellVal(plan, 'F2'), [3]);
 
   // Five appended rows: milk-small + the four new catalog items.

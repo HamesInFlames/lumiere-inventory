@@ -12,6 +12,7 @@
  * by `railway run`). Idempotent: running it twice yields the same result.
  */
 import { google } from 'googleapis';
+import { pathToFileURL } from 'node:url';
 import { config } from '../server/src/config.js';
 
 // Column layout: A id | B category | C subcategory | D itemName | E unit |
@@ -39,8 +40,8 @@ const UPDATES = {
   'one-biter-containers-4': [0, 'urgent'],
 };
 
-// Rename the existing single `milk` row into the "large bag" item.
-const MILK_RENAME = { id: 'milk', itemName: 'Milk (large bag)', quantity: 3, status: 'have' };
+// Rename the existing single `milk` row into the "large bag" item (also fix its unit).
+const MILK_RENAME = { id: 'milk', itemName: 'Milk (large bag)', unit: 'bag', quantity: 3, status: 'have' };
 
 // Rows that must exist (append if missing, else update quantity/status).
 const ENSURE = [
@@ -77,8 +78,9 @@ export async function applyCount({ sheets, spreadsheetId, sheetTab, now, dryRun 
   const missing = [];
   const log = [];
 
-  const setCells = (row, { itemName, quantity, status }) => {
+  const setCells = (row, { itemName, unit, quantity, status }) => {
     if (itemName !== undefined) cellUpdates.push({ range: `${sheetTab}!D${row}`, values: [[itemName]] });
+    if (unit !== undefined) cellUpdates.push({ range: `${sheetTab}!E${row}`, values: [[unit]] });
     if (quantity !== undefined) cellUpdates.push({ range: `${sheetTab}!F${row}`, values: [[quantity]] });
     if (status !== undefined) cellUpdates.push({ range: `${sheetTab}!G${row}`, values: [[status]] });
     cellUpdates.push({ range: `${sheetTab}!H${row}`, values: [[stamp]] });
@@ -154,7 +156,9 @@ async function main() {
   else console.log(`Sheet: https://docs.google.com/spreadsheets/d/${config.sheetId}/edit`);
 }
 
-// Run only when invoked directly (not when imported by a test).
-if (import.meta.url === `file://${process.argv[1]}` || import.meta.url.endsWith(process.argv[1]?.replace(/\\/g, '/') || '')) {
+// Run only when invoked directly (not when imported, e.g. by a test). Requires
+// a defined argv[1] so an import with no script arg never auto-runs main().
+const invokedDirectly = Boolean(process.argv[1]) && import.meta.url === pathToFileURL(process.argv[1]).href;
+if (invokedDirectly) {
   main().catch((err) => { console.error(err.message || err); process.exit(1); });
 }
