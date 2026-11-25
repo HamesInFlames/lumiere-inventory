@@ -258,7 +258,6 @@ export default function App() {
       {shareOpen && (
         <ShareSheet
           allItems={items}
-          viewItems={visible}
           onClose={() => setShareOpen(false)}
         />
       )}

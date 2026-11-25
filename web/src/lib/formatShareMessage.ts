@@ -4,20 +4,22 @@ import type { Item } from '../types';
 const CATEGORY_ORDER = ['DRINKS', 'INGREDIENTS', 'CONTAINERS', 'SUPPLIES'];
 
 export interface ShareOptions {
-  scope: 'low' | 'view';
+  scope: 'urgent' | 'restock' | 'all';
 }
 
+// urgent first, then "need soon", then stocked.
+const STATUS_RANK = { urgent: 0, low: 1, have: 2 } as const;
+
 /**
- * Build a WhatsApp-formatted inventory message from the given items.
+ * Build a WhatsApp-formatted inventory message from the full item list.
  * Pure and dependency-free. WhatsApp renders *bold* and _italic_.
- *
- * `items` should already be scoped by the caller for the 'view' case; for the
- * 'low' case this function filters to low items itself so it works off the full
- * list regardless of the caller's current filters.
+ * Filters by `scope` itself, so callers always pass every item.
  */
 export function formatShareMessage(items: Item[], opts: ShareOptions): string {
   const { scope } = opts;
-  const chosen = scope === 'low' ? items.filter((it) => it.low) : items;
+  const chosen = items.filter((it) =>
+    scope === 'all' ? true : scope === 'urgent' ? it.status === 'urgent' : it.status !== 'have',
+  );
 
   const lines: string[] = ['*Inventory*'];
 
@@ -36,24 +38,28 @@ export function formatShareMessage(items: Item[], opts: ShareOptions): string {
   for (const category of orderedCategories) {
     const group = byCategory.get(category)!;
     group.sort((a, b) => {
+      if (a.status !== b.status) return STATUS_RANK[a.status] - STATUS_RANK[b.status];
       if (a.subcategory !== b.subcategory) return a.subcategory.localeCompare(b.subcategory);
       return a.itemName.localeCompare(b.itemName);
     });
     lines.push('');
     lines.push(`*${category}*`);
     for (const it of group) {
-      const flag = it.status === 'urgent' ? ' — URGENT' : it.status === 'low' ? ' — low' : '';
-      lines.push(`• ${it.itemName}: ${it.quantity} ${it.unit}${flag}`);
+      const tag = it.status === 'urgent' ? ' — URGENT' : it.status === 'low' ? ' — need soon' : '';
+      lines.push(`• ${it.itemName}: ${it.quantity} ${it.unit} left${tag}`);
     }
   }
 
   lines.push('');
-  // Count low items within the shared set so the footer matches the content.
-  const lowCount = chosen.filter((it) => it.low).length;
-  if (lowCount === 0) {
+  const u = chosen.filter((it) => it.status === 'urgent').length;
+  const l = chosen.filter((it) => it.status === 'low').length;
+  if (u + l === 0) {
     lines.push('All items are stocked. ✅');
   } else {
-    lines.push(`${lowCount} item${lowCount === 1 ? '' : 's'} to restock.`);
+    const parts: string[] = [];
+    if (u > 0) parts.push(`${u} urgent`);
+    if (l > 0) parts.push(`${l} need soon`);
+    lines.push(parts.join(' · '));
   }
 
   return lines.join('\n');

@@ -4,22 +4,21 @@ import { formatShareMessage } from '../lib/formatShareMessage';
 
 interface Props {
   allItems: Item[];
-  viewItems: Item[];
   onClose: () => void;
 }
 
 const WHATSAPP_PHONE = (import.meta.env.VITE_WHATSAPP_PHONE || '').replace(/\D/g, '');
 
-export function ShareSheet({ allItems, viewItems, onClose }: Props) {
-  const [scope, setScope] = useState<'low' | 'view'>('low');
+export function ShareSheet({ allItems, onClose }: Props) {
+  const [scope, setScope] = useState<'urgent' | 'restock' | 'all'>('restock');
   const [text, setText] = useState('');
   const [edited, setEdited] = useState(false);
   const [copied, setCopied] = useState(false);
 
   // Regenerate the message when the scope changes (discards manual edits).
   const generated = useMemo(
-    () => formatShareMessage(scope === 'low' ? allItems : viewItems, { scope }),
-    [scope, allItems, viewItems],
+    () => formatShareMessage(allItems, { scope }),
+    [scope, allItems],
   );
 
   useEffect(() => {
@@ -68,22 +67,21 @@ export function ShareSheet({ allItems, viewItems, onClose }: Props) {
 
         {/* Scope toggle */}
         <div className="flex rounded-lg border border-brand-line p-0.5 mb-3 text-sm">
-          <button
-            onClick={() => setScope('low')}
-            className={`flex-1 rounded-md py-1.5 font-medium transition ${
-              scope === 'low' ? 'bg-brand-ink text-white' : 'text-brand-inkSoft'
-            }`}
-          >
-            Low stock only
-          </button>
-          <button
-            onClick={() => setScope('view')}
-            className={`flex-1 rounded-md py-1.5 font-medium transition ${
-              scope === 'view' ? 'bg-brand-ink text-white' : 'text-brand-inkSoft'
-            }`}
-          >
-            Current view
-          </button>
+          {([
+            ['urgent', 'Urgent'],
+            ['restock', 'Urgent + soon'],
+            ['all', 'All'],
+          ] as const).map(([value, label]) => (
+            <button
+              key={value}
+              onClick={() => setScope(value)}
+              className={`flex-1 rounded-md py-1.5 font-medium transition ${
+                scope === value ? 'bg-brand-ink text-white' : 'text-brand-inkSoft'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
         <textarea
