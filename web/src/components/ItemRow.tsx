@@ -1,22 +1,33 @@
 import { useEffect, useRef, useState } from 'react';
-import type { Item } from '../types';
+import type { Item, ItemStatus } from '../types';
 
 interface Props {
   item: Item;
   units: string[];
-  onPatch: (patch: { quantity?: number; unit?: string; lowThreshold?: number }) => void;
+  onPatch: (patch: { quantity?: number; unit?: string; status?: ItemStatus }) => void;
 }
+
+const STATUSES: { value: ItemStatus; label: string; active: string }[] = [
+  { value: 'have', label: 'Have', active: 'bg-brand-surface text-brand-ink' },
+  { value: 'low', label: 'Low', active: 'bg-brand-butter text-brand-ink' },
+  { value: 'urgent', label: 'Urgent', active: 'bg-brand-need text-white' },
+];
 
 export function ItemRow({ item, units, onPatch }: Props) {
   // Local editable copy of quantity so typing feels instant.
   const [qty, setQty] = useState(String(item.quantity));
+  const [unit, setUnit] = useState(item.unit);
   const editing = useRef(false);
+  const editingUnit = useRef(false);
 
-  // Keep the field in sync when the item changes from elsewhere (SSE/poll),
-  // unless the user is mid-edit in this field.
+  // Keep the fields in sync when the item changes from elsewhere (SSE/poll),
+  // unless the user is mid-edit in that field.
   useEffect(() => {
     if (!editing.current) setQty(String(item.quantity));
   }, [item.quantity]);
+  useEffect(() => {
+    if (!editingUnit.current) setUnit(item.unit);
+  }, [item.unit]);
 
   function commitQty() {
     editing.current = false;
@@ -25,37 +36,23 @@ export function ItemRow({ item, units, onPatch }: Props) {
     if (n !== item.quantity) onPatch({ quantity: n });
   }
 
+  function commitUnit() {
+    editingUnit.current = false;
+    const u = unit.trim();
+    if (!u) { setUnit(item.unit); return; }
+    setUnit(u);
+    if (u !== item.unit) onPatch({ unit: u });
+  }
+
   function step(delta: number) {
     const n = Math.max(0, item.quantity + delta);
     setQty(String(n));
     onPatch({ quantity: n });
   }
 
-  const unitOptions = units.includes(item.unit) ? units : [item.unit, ...units];
-  const isToggle = item.type === 'toggle';
-  // For toggle items: quantity 0 = "Need" (restock), quantity >= 1 = have it.
-  const needed = item.quantity <= 0;
+  const listId = `units-${item.id}`;
 
-  const controls = isToggle ? (
-    <div className="flex rounded-lg border border-brand-line p-0.5 text-sm shrink-0">
-      <button
-        onClick={() => { if (!needed) onPatch({ quantity: 0 }); }}
-        className={`px-3 py-1.5 rounded-md font-medium transition ${
-          needed ? 'bg-brand-need text-white' : 'text-brand-inkSoft'
-        }`}
-      >
-        Need
-      </button>
-      <button
-        onClick={() => { if (needed) onPatch({ quantity: 1 }); }}
-        className={`px-3 py-1.5 rounded-md font-medium transition ${
-          !needed ? 'bg-brand-surface text-brand-ink' : 'text-brand-inkSoft'
-        }`}
-      >
-        Have
-      </button>
-    </div>
-  ) : (
+  const counter = (
     <div className="flex items-center gap-1.5 shrink-0">
       <button
         onClick={() => step(-1)}
@@ -81,15 +78,37 @@ export function ItemRow({ item, units, onPatch }: Props) {
       >
         +
       </button>
-      <select
-        value={item.unit}
-        onChange={(e) => onPatch({ unit: e.target.value })}
+      <input
+        list={listId}
+        value={unit}
+        aria-label="Unit"
+        onFocus={() => { editingUnit.current = true; }}
+        onChange={(e) => setUnit(e.target.value)}
+        onBlur={commitUnit}
+        onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
         className="w-20 sm:w-24 rounded-lg border border-brand-line pl-2 pr-1 py-1.5 text-xs sm:text-sm bg-brand-bg focus:outline-none focus:ring-2 focus:ring-brand-rose"
-      >
-        {unitOptions.map((u) => (
-          <option key={u} value={u}>{u}</option>
+      />
+      <datalist id={listId}>
+        {units.map((u) => (
+          <option key={u} value={u} />
         ))}
-      </select>
+      </datalist>
+    </div>
+  );
+
+  const statusControl = (
+    <div className="flex rounded-lg border border-brand-line p-0.5 text-sm shrink-0">
+      {STATUSES.map((s) => (
+        <button
+          key={s.value}
+          onClick={() => { if (item.status !== s.value) onPatch({ status: s.value }); }}
+          className={`px-3 py-1.5 rounded-md font-medium transition ${
+            item.status === s.value ? s.active : 'text-brand-inkSoft'
+          }`}
+        >
+          {s.label}
+        </button>
+      ))}
     </div>
   );
 
@@ -107,7 +126,7 @@ export function ItemRow({ item, units, onPatch }: Props) {
           <span className="font-medium text-brand-ink break-words sm:truncate">{item.itemName}</span>
           {item.low && (
             <span className="shrink-0 text-[10px] uppercase tracking-wide font-semibold text-white bg-brand-need rounded px-1.5 py-0.5">
-              {isToggle ? 'Need' : 'Low'}
+              {item.status === 'urgent' ? 'Urgent' : 'Low'}
             </span>
           )}
         </div>
@@ -115,10 +134,13 @@ export function ItemRow({ item, units, onPatch }: Props) {
         <div className="hidden sm:block text-xs text-brand-inkSoft truncate">{subcategory}</div>
       </div>
 
-      {/* Mobile line 2: subcategory (left, may truncate) + controls (right). */}
-      <div className="flex items-center justify-between gap-2 sm:justify-end sm:gap-3">
-        <div className="text-xs text-brand-inkSoft truncate sm:hidden">{subcategory}</div>
-        {controls}
+      {/* Mobile: subcategory + count/unit on one line, status segments right-aligned below. */}
+      <div className="flex flex-col items-end gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
+        <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-end">
+          <div className="text-xs text-brand-inkSoft truncate sm:hidden">{subcategory}</div>
+          {counter}
+        </div>
+        {statusControl}
       </div>
     </div>
   );

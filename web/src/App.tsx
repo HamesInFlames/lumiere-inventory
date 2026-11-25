@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from './api';
-import type { Item, Note, SortKey } from './types';
+import type { Item, ItemStatus, Note, SortKey } from './types';
 import { Login } from './components/Login';
 import { ItemRow } from './components/ItemRow';
 import { ShareSheet } from './components/ShareSheet';
@@ -77,14 +77,13 @@ export default function App() {
     }
   }
 
-  async function patch(id: string, p: { quantity?: number; unit?: string; lowThreshold?: number }) {
+  async function patch(id: string, p: { quantity?: number; unit?: string; status?: ItemStatus }) {
     const prev = items;
     // Optimistic update.
     setItems((cur) =>
       cur.map((it) => {
         if (it.id !== id) return it;
-        const q = p.quantity ?? it.quantity;
-        const low = it.type === 'toggle' ? q <= 0 : q <= (p.lowThreshold ?? it.lowThreshold);
+        const low = (p.status ?? it.status) !== 'have';
         return { ...it, ...p, low };
       }),
     );
@@ -259,7 +258,6 @@ export default function App() {
       {shareOpen && (
         <ShareSheet
           allItems={items}
-          viewItems={visible}
           onClose={() => setShareOpen(false)}
         />
       )}
