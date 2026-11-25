@@ -1,13 +1,14 @@
 id,category,subcategory,item_name,unit,quantity,status
-milk,DRINKS,Milk & Dairy,Milk,carton,0,have
-almond-milk,DRINKS,Milk & Dairy,Almond milk,carton,0,have
+milk-large,DRINKS,Milk & Dairy,Milk (large bag),bag,3,have
+milk-small,DRINKS,Milk & Dairy,Milk (small bag),bag,7,have
+almond-milk,DRINKS,Milk & Dairy,Almond milk,carton,4,have
 oat-milk,DRINKS,Milk & Dairy,Oat milk,carton,0,have
 skim-milk,DRINKS,Milk & Dairy,Skim milk,carton,0,have
 lactose-free-milk,DRINKS,Milk & Dairy,Lactose free milk,carton,0,have
 cream,DRINKS,Milk & Dairy,Cream,carton,0,have
-large-coffee-bags,DRINKS,Coffee,Large coffee bags,bag,0,have
-small-coffee-bags,DRINKS,Coffee,Small coffee bags,bag,0,have
-decaf-coffee-bags,DRINKS,Coffee,Decaf coffee bags,bag,0,have
+large-coffee-bags,DRINKS,Coffee,Large coffee bags,bag,5,have
+small-coffee-bags,DRINKS,Coffee,Small coffee bags,bag,4,have
+decaf-coffee-bags,DRINKS,Coffee,Decaf coffee bags,bag,1,low
 chai,DRINKS,Teas,Chai,box,0,have
 earl-grey,DRINKS,Teas,Earl grey,box,0,have
 peppermint,DRINKS,Teas,Peppermint,box,0,have
@@ -37,35 +38,39 @@ cinnamon-sticks,INGREDIENTS,Powders & Spices,Cinnamon sticks,bag,0,have
 all-spice,INGREDIENTS,Powders & Spices,All spice,jar,0,have
 orange,INGREDIENTS,Fruits,Orange,unit,0,have
 lemon,INGREDIENTS,Fruits,Lemon,unit,0,have
-apple,INGREDIENTS,Fruits,Apple,unit,0,have
+apple,INGREDIENTS,Fruits,Apple,unit,0,low
 ginger,INGREDIENTS,Fruits,Ginger,unit,0,have
-mint,INGREDIENTS,Fruits,Mint,pack,0,have
-brown-sugar,INGREDIENTS,Sweeteners,Brown sugar,bag,0,have
+mint,INGREDIENTS,Fruits,Mint,pack,0,low
+brown-sugar,INGREDIENTS,Sweeteners,Brown sugar,bag,0,low
 white-sugar,INGREDIENTS,Sweeteners,White sugar,bag,0,have
 honey,INGREDIENTS,Sweeteners,Honey,bottle,0,have
 big-boxes,CONTAINERS,Boxes,Big boxes,case,0,have
-small-boxes,CONTAINERS,Boxes,Small boxes,case,0,have
+small-boxes,CONTAINERS,Boxes,Small boxes,case,0,urgent
 rectangle-boxes,CONTAINERS,Boxes,Rectangle boxes,case,0,have
-one-biter-containers-4,CONTAINERS,Boxes,4 one-biter containers,case,0,have
+one-biter-containers-4,CONTAINERS,Boxes,4 one-biter containers,case,0,urgent
 one-biter-containers-12,CONTAINERS,Boxes,12 one-biter containers,case,0,have
 small-plastic-box-lids,CONTAINERS,Boxes,Small plastic box lids,pack,0,have
 large-plastic-box-lids,CONTAINERS,Boxes,Large plastic box lids,pack,0,have
 baguette-bags,CONTAINERS,Boxes,Baguette bags,pack,0,have
 paper-bags-10,CONTAINERS,Bags & Paper,Paper bags 10,pack,0,have
-paper-bags-12,CONTAINERS,Bags & Paper,Paper bags 12,pack,0,have
-lumiere-pastry-paper,CONTAINERS,Bags & Paper,Lumiere pastry paper,pack,0,have
-shopping-bags,CONTAINERS,Bags & Paper,Shopping bags,pack,0,have
-large-to-go-cups,CONTAINERS,Cups & Lids,Large to-go cups,sleeve,0,have
-regular-to-go-cups,CONTAINERS,Cups & Lids,Regular to-go cups,sleeve,0,have
+paper-bags-12,CONTAINERS,Bags & Paper,Paper bags 12,pack,1,low
+lumiere-pastry-paper,CONTAINERS,Bags & Paper,Lumiere pastry paper,pack,0,low
+shopping-bags,CONTAINERS,Bags & Paper,Shopping bags,pack,0,urgent
+large-to-go-cups,CONTAINERS,Cups & Lids,Large to-go cups,sleeve,5,have
+regular-to-go-cups,CONTAINERS,Cups & Lids,Regular to-go cups,sleeve,8,have
 espresso-to-go-cups,CONTAINERS,Cups & Lids,Espresso to-go cups,sleeve,0,have
 cold-to-go-cups,CONTAINERS,Cups & Lids,Cold to-go cups,sleeve,0,have
 blue-lids,CONTAINERS,Cups & Lids,Blue lids,sleeve,0,have
 cold-to-go-lids,CONTAINERS,Cups & Lids,Cold to-go lids,sleeve,0,have
-napkins,SUPPLIES,General,Napkins,pack,0,have
+napkins,SUPPLIES,General,Napkins,pack,0,low
 mixer-sticks,SUPPLIES,General,Mixer sticks,box,0,have
-plastic-gloves,SUPPLIES,General,Plastic gloves,box,0,have
+plastic-gloves,SUPPLIES,General,Plastic gloves,box,0,low
 tape,SUPPLIES,General,Tape,roll,0,have
 straws,SUPPLIES,General,Straws,box,0,have
 co2,SUPPLIES,General,CO2,tank,0,have
 wooden-to-go-utensils,SUPPLIES,General,Wooden to-go utensils,box,0,have
-cup-holders,SUPPLIES,General,Cup holders,pack,0,have
+cup-holders,SUPPLIES,General,Cup holders,pack,0,urgent
+maple-spice-syrup,DRINKS,Syrups,Maple spice,bottle,0,urgent
+coffee-cup-sleeves,CONTAINERS,Cups & Lids,Coffee cup sleeves,sleeve,0,urgent
+small-garbage-bags,SUPPLIES,General,Small coffee garbage bags,box,0,urgent
+receipt-paper,SUPPLIES,General,Receipt / print paper,roll,0,urgent
