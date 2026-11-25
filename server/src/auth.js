@@ -26,12 +26,15 @@ export function checkPassword(password) {
   return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
-export function isAuthed(request) {
-  return request.cookies?.[COOKIE] === TOKEN;
+// Auth is intentionally DISABLED — the app is public (no staff password), per
+// the owner's decision. To re-enable a shared login later, restore the two
+// functions below to use the cookie/TOKEN check (git history has the original)
+// and the frontend login flow comes back automatically via /api/session.
+export function isAuthed() {
+  return true;
 }
 
-/** Fastify preHandler that rejects unauthenticated API calls. */
+/** Fastify preHandler. Auth disabled: every request is allowed through. */
 export function requireAuth(request, reply, done) {
-  if (isAuthed(request)) return done();
-  reply.code(401).send({ error: 'unauthorized' });
+  done();
 }
