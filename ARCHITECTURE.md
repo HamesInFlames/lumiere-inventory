@@ -53,6 +53,7 @@ monthly cost (Hobby plan, ~$5/mo).
 | G      | Status        | `have` / `low` / `urgent` — staff-set restock flag. Dropdown. |
 | H      | Last Updated  | ISO timestamp, written by app or Apps Script                 |
 | I      | Updated By    | Staff name/initials or "sheet"                               |
+| J      | Track Qty     | `TRUE`/`FALSE` — `FALSE` hides the quantity (hard-to-count items); blank reads as `TRUE` |
 
 **Every item is a live count plus a status.** Staff count what's left with +/− steppers (Quantity,
 in its Unit) and set a **Status** — `have`, `low`, or `urgent`. An item "needs restock" when its
@@ -60,6 +61,11 @@ status is `low` or `urgent`; there is no automatic threshold. (Earlier versions 
 column and a `count`/`toggle` `Type` column; both were retired in favour of the manual status. The
 server migrates an existing sheet in place on boot — see `sheetsSeed.js#migrateSchema` — repurposing
 column G and clearing the old Type column non-destructively.)
+
+**Hard-to-count items.** Set **Track Qty** to `FALSE` (a per-item toggle in the app) to hide the
+quantity for items that are awkward to count — the app then shows only the status, and the WhatsApp
+share drops the `qty unit left` for that item. A blank cell reads as tracked, so existing rows need
+no backfill; the server only writes the `Track Qty` header on boot.
 
 **Tab `Units`**: single column of suggested units — `unit, bottle, bag, box, carton, case, pack,
 sleeve, jar, roll, tank, L, kg, lb`. The Unit column's dropdown (Data → Data validation) is

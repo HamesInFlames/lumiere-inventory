@@ -34,7 +34,7 @@ app.get('/api/units', { preHandler: requireAuth }, async () => ({ units: store.g
 
 app.patch('/api/items/:id', { preHandler: requireAuth }, async (request, reply) => {
   const { id } = request.params;
-  const { quantity, unit, status, updatedBy } = request.body || {};
+  const { quantity, unit, status, trackQty, updatedBy } = request.body || {};
   const patch = {};
   if (quantity !== undefined) patch.quantity = Number(quantity);
   if (unit !== undefined) patch.unit = String(unit);
@@ -44,6 +44,7 @@ app.patch('/api/items/:id', { preHandler: requireAuth }, async (request, reply) 
     }
     patch.status = status;
   }
+  if (trackQty !== undefined) patch.trackQty = Boolean(trackQty);
   if (Object.keys(patch).length === 0) {
     return reply.code(400).send({ error: 'no updatable fields provided' });
   }

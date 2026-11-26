@@ -46,7 +46,8 @@ export function formatShareMessage(items: Item[], opts: ShareOptions): string {
     lines.push(`*${category}*`);
     for (const it of group) {
       const tag = it.status === 'urgent' ? ' — URGENT' : it.status === 'low' ? ' — need soon' : '';
-      lines.push(`• ${it.itemName}: ${it.quantity} ${it.unit} left${tag}`);
+      const qty = it.trackQty === false ? '' : `: ${it.quantity} ${it.unit} left`;
+      lines.push(`• ${it.itemName}${qty}${tag}`);
     }
   }
 

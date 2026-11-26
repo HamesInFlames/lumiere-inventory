@@ -4,7 +4,7 @@ import type { Item, ItemStatus } from '../types';
 interface Props {
   item: Item;
   units: string[];
-  onPatch: (patch: { quantity?: number; unit?: string; status?: ItemStatus }) => void;
+  onPatch: (patch: { quantity?: number; unit?: string; status?: ItemStatus; trackQty?: boolean }) => void;
 }
 
 const STATUSES: { value: ItemStatus; label: string; active: string }[] = [
@@ -51,6 +51,21 @@ export function ItemRow({ item, units, onPatch }: Props) {
   }
 
   const listId = `units-${item.id}`;
+
+  const tracking = item.trackQty !== false;
+
+  const toggle = (
+    <button
+      onClick={() => onPatch({ trackQty: !tracking })}
+      aria-label="Toggle count"
+      title="Show/hide count"
+      className={`w-9 h-9 shrink-0 rounded-lg text-base font-semibold leading-none ${
+        tracking ? 'bg-brand-surface text-brand-ink' : 'text-brand-inkSoft border border-brand-line'
+      }`}
+    >
+      #
+    </button>
+  );
 
   const counter = (
     <div className="flex items-center gap-1.5 shrink-0">
@@ -138,7 +153,11 @@ export function ItemRow({ item, units, onPatch }: Props) {
       <div className="flex flex-col items-end gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
         <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-end">
           <div className="text-xs text-brand-inkSoft truncate sm:hidden">{subcategory}</div>
-          {counter}
+          {tracking ? (
+            <div className="flex items-center gap-1.5">{toggle}{counter}</div>
+          ) : (
+            toggle
+          )}
         </div>
         {statusControl}
       </div>

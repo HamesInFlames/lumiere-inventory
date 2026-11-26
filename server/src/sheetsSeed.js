@@ -2,7 +2,8 @@ import { DEFAULT_UNITS } from './config.js';
 
 // Column layout of the Inventory tab (see ARCHITECTURE.md §3).
 // G Status = 'have' | 'low' | 'urgent' (staff-set restock flag).
-export const HEADER = ['ID', 'Category', 'Subcategory', 'Item Name', 'Unit', 'Quantity', 'Status', 'Last Updated', 'Updated By'];
+// J Track Qty = TRUE/FALSE — FALSE hides the quantity for hard-to-count items.
+export const HEADER = ['ID', 'Category', 'Subcategory', 'Item Name', 'Unit', 'Quantity', 'Status', 'Last Updated', 'Updated By', 'Track Qty'];
 
 export const STATUS_VALUES = ['have', 'low', 'urgent'];
 
@@ -56,6 +57,7 @@ export async function seedSheet({ sheets, spreadsheetId, sheetTab, unitsTab, ite
   const rows = items.map((it) => [
     it.id, it.category, it.subcategory, it.itemName,
     it.unit, it.quantity, it.status || 'have', '', '',
+    it.trackQty === false ? 'FALSE' : 'TRUE',
   ]);
   await sheets.spreadsheets.values.update({
     spreadsheetId,

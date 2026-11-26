@@ -77,7 +77,7 @@ export default function App() {
     }
   }
 
-  async function patch(id: string, p: { quantity?: number; unit?: string; status?: ItemStatus }) {
+  async function patch(id: string, p: { quantity?: number; unit?: string; status?: ItemStatus; trackQty?: boolean }) {
     const prev = items;
     // Optimistic update.
     setItems((cur) =>

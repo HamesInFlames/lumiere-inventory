@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { readSeedItems, normStatus } from '../csv.js';
+import { readSeedItems, normStatus, parseTrackQty } from '../csv.js';
 import { DEFAULT_UNITS } from '../config.js';
 
 export function newNoteId() {
@@ -36,8 +36,12 @@ export class LocalStore {
   }
 
   async list() {
-    // Normalize status on read so a pre-migration local file still works.
-    return this._read().items.map((it) => ({ ...it, status: normStatus(it.status) }));
+    // Normalize status + trackQty on read so a pre-existing local file still works.
+    return this._read().items.map((it) => ({
+      ...it,
+      status: normStatus(it.status),
+      trackQty: it.trackQty === undefined ? true : parseTrackQty(it.trackQty),
+    }));
   }
 
   async getUnits() {
@@ -80,6 +84,9 @@ export class LocalStore {
     }
     if (patch.status !== undefined) {
       item.status = normStatus(patch.status);
+    }
+    if (patch.trackQty !== undefined) {
+      item.trackQty = Boolean(patch.trackQty);
     }
     item.lastUpdated = patch.lastUpdated;
     item.updatedBy = updatedBy || 'staff';
