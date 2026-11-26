@@ -26,7 +26,7 @@ export const api = {
 
   async patchItem(
     id: string,
-    patch: { quantity?: number; unit?: string; status?: ItemStatus },
+    patch: { quantity?: number; unit?: string; status?: ItemStatus; trackQty?: boolean },
     updatedBy: string,
   ): Promise<Item> {
     const res = await fetch(`/api/items/${encodeURIComponent(id)}`, {

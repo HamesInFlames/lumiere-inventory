@@ -1,11 +1,11 @@
 import { google } from 'googleapis';
-import { readSeedItems, normStatus } from '../csv.js';
-import { seedSheet, ensureTabs, migrateSchema } from '../sheetsSeed.js';
+import { readSeedItems, normStatus, parseTrackQty } from '../csv.js';
+import { seedSheet, ensureTabs, migrateSchema, ensureTrackQtyHeader } from '../sheetsSeed.js';
 import { newNoteId } from './localStore.js';
 
 // A ID | B Category | C Subcategory | D Item Name | E Unit | F Quantity |
-// G Status | H Last Updated | I Updated By (ARCHITECTURE.md §3).
-const DATA_RANGE = 'A2:I';
+// G Status | H Last Updated | I Updated By | J Track Qty (ARCHITECTURE.md §3).
+const DATA_RANGE = 'A2:J';
 
 /**
  * Google Sheets-backed store. The sheet is the source of truth. Reads pull the
@@ -49,6 +49,9 @@ export class SheetsStore {
     if (migration.migrated) {
       console.log(`Migrated ${migration.count} rows to the Status schema (Low Threshold + Type retired).`);
     }
+    // Ensure the Track Qty header (column J). Blank J cells read as tracked, so
+    // existing rows need no backfill — only the header is set.
+    await ensureTrackQtyHeader({ sheets: this.sheets, spreadsheetId: this.sheetId, sheetTab: this.sheetTab });
     // Ensure the Notes tab exists (works on the already-live sheet too).
     await ensureTabs(this.sheets, this.sheetId, [this.notesTab]);
     const hdr = await this.sheets.spreadsheets.values.get({
@@ -87,6 +90,7 @@ export class SheetsStore {
         status: normStatus(r[6]),
         lastUpdated: r[7] || '',
         updatedBy: r[8] || '',
+        trackQty: parseTrackQty(r[9]),
       }));
   }
 
@@ -122,6 +126,9 @@ export class SheetsStore {
     }
     if (patch.status !== undefined) {
       data.push({ range: this._range(`G${row}`), values: [[normStatus(patch.status)]] });
+    }
+    if (patch.trackQty !== undefined) {
+      data.push({ range: this._range(`J${row}`), values: [[patch.trackQty ? 'TRUE' : 'FALSE']] });
     }
     data.push({ range: this._range(`H${row}`), values: [[patch.lastUpdated]] });
     data.push({ range: this._range(`I${row}`), values: [[updatedBy || 'staff']] });

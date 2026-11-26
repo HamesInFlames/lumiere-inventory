@@ -41,6 +41,13 @@ export function normStatus(value) {
   return s === 'low' || s === 'urgent' ? s : 'have';
 }
 
+/** Whether to track a quantity for an item. Default true; only an explicit
+ * falsey word turns it off, so a blank cell on an existing sheet stays tracked. */
+export function parseTrackQty(value) {
+  const s = String(value ?? '').trim().toLowerCase();
+  return !(s === 'false' || s === 'no' || s === 'off' || s === '0');
+}
+
 /** Read the seed CSV into normalized item objects. */
 export function readSeedItems(csvPath) {
   const text = fs.readFileSync(csvPath, 'utf8');
@@ -55,6 +62,7 @@ export function readSeedItems(csvPath) {
     unit: r[idx.unit].trim(),
     quantity: Number(r[idx.quantity]) || 0,
     status: normStatus(idx.status !== undefined ? r[idx.status] : 'have'),
+    trackQty: parseTrackQty(idx.track_qty !== undefined ? r[idx.track_qty] : 'true'),
     lastUpdated: '',
     updatedBy: '',
   }));

@@ -2,7 +2,8 @@ import { DEFAULT_UNITS } from './config.js';
 
 // Column layout of the Inventory tab (see ARCHITECTURE.md §3).
 // G Status = 'have' | 'low' | 'urgent' (staff-set restock flag).
-export const HEADER = ['ID', 'Category', 'Subcategory', 'Item Name', 'Unit', 'Quantity', 'Status', 'Last Updated', 'Updated By'];
+// J Track Qty = TRUE/FALSE — FALSE hides the quantity for hard-to-count items.
+export const HEADER = ['ID', 'Category', 'Subcategory', 'Item Name', 'Unit', 'Quantity', 'Status', 'Last Updated', 'Updated By', 'Track Qty'];
 
 export const STATUS_VALUES = ['have', 'low', 'urgent'];
 
@@ -56,6 +57,7 @@ export async function seedSheet({ sheets, spreadsheetId, sheetTab, unitsTab, ite
   const rows = items.map((it) => [
     it.id, it.category, it.subcategory, it.itemName,
     it.unit, it.quantity, it.status || 'have', '', '',
+    it.trackQty === false ? 'FALSE' : 'TRUE',
   ]);
   await sheets.spreadsheets.values.update({
     spreadsheetId,
@@ -215,4 +217,24 @@ export async function migrateSchema({ sheets, spreadsheetId, sheetTab }) {
   });
 
   return { migrated: true, count: n };
+}
+
+/**
+ * Ensure the Track Qty header exists in column J. Sets J1 only when it isn't
+ * already "Track Qty"; never touches any data cell, so it is non-destructive to
+ * existing rows (a blank J cell reads as tracked). Idempotent.
+ *
+ * @returns {{set: boolean}}
+ */
+export async function ensureTrackQtyHeader({ sheets, spreadsheetId, sheetTab }) {
+  const res = await sheets.spreadsheets.values.get({ spreadsheetId, range: `${sheetTab}!J1` });
+  const current = String(res.data.values?.[0]?.[0] || '').trim();
+  if (current === 'Track Qty') return { set: false };
+  await sheets.spreadsheets.values.update({
+    spreadsheetId,
+    range: `${sheetTab}!J1`,
+    valueInputOption: 'RAW',
+    requestBody: { values: [['Track Qty']] },
+  });
+  return { set: true };
 }

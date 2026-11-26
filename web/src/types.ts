@@ -8,6 +8,7 @@ export interface Item {
   unit: string;
   quantity: number;
   status: ItemStatus;
+  trackQty: boolean; // false = hard to count; hide the quantity, show only status
   lastUpdated: string;
   updatedBy: string;
   low: boolean; // derived: status !== 'have'
