@@ -218,3 +218,23 @@ export async function migrateSchema({ sheets, spreadsheetId, sheetTab }) {
 
   return { migrated: true, count: n };
 }
+
+/**
+ * Ensure the Track Qty header exists in column J. Sets J1 only when it isn't
+ * already "Track Qty"; never touches any data cell, so it is non-destructive to
+ * existing rows (a blank J cell reads as tracked). Idempotent.
+ *
+ * @returns {{set: boolean}}
+ */
+export async function ensureTrackQtyHeader({ sheets, spreadsheetId, sheetTab }) {
+  const res = await sheets.spreadsheets.values.get({ spreadsheetId, range: `${sheetTab}!J1` });
+  const current = String(res.data.values?.[0]?.[0] || '').trim();
+  if (current === 'Track Qty') return { set: false };
+  await sheets.spreadsheets.values.update({
+    spreadsheetId,
+    range: `${sheetTab}!J1`,
+    valueInputOption: 'RAW',
+    requestBody: { values: [['Track Qty']] },
+  });
+  return { set: true };
+}

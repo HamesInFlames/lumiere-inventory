@@ -1,6 +1,6 @@
 import { google } from 'googleapis';
 import { readSeedItems, normStatus, parseTrackQty } from '../csv.js';
-import { seedSheet, ensureTabs, migrateSchema } from '../sheetsSeed.js';
+import { seedSheet, ensureTabs, migrateSchema, ensureTrackQtyHeader } from '../sheetsSeed.js';
 import { newNoteId } from './localStore.js';
 
 // A ID | B Category | C Subcategory | D Item Name | E Unit | F Quantity |
@@ -49,20 +49,9 @@ export class SheetsStore {
     if (migration.migrated) {
       console.log(`Migrated ${migration.count} rows to the Status schema (Low Threshold + Type retired).`);
     }
-    // Ensure the Track Qty header (column J). A blank J cell reads as tracked,
-    // so existing rows need no backfill — only the header is set for clarity.
-    const jHdr = await this.sheets.spreadsheets.values.get({
-      spreadsheetId: this.sheetId,
-      range: this._range('J1'),
-    });
-    if (String(jHdr.data.values?.[0]?.[0] || '').trim() !== 'Track Qty') {
-      await this.sheets.spreadsheets.values.update({
-        spreadsheetId: this.sheetId,
-        range: this._range('J1'),
-        valueInputOption: 'RAW',
-        requestBody: { values: [['Track Qty']] },
-      });
-    }
+    // Ensure the Track Qty header (column J). Blank J cells read as tracked, so
+    // existing rows need no backfill — only the header is set.
+    await ensureTrackQtyHeader({ sheets: this.sheets, spreadsheetId: this.sheetId, sheetTab: this.sheetTab });
     // Ensure the Notes tab exists (works on the already-live sheet too).
     await ensureTabs(this.sheets, this.sheetId, [this.notesTab]);
     const hdr = await this.sheets.spreadsheets.values.get({
